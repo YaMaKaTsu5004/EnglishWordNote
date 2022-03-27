@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">EnglishWordNote</string>
+    <string name="WordsEdit">単語の編集</string>
+    <string name="WordsIO">英単語入出力</string>
+    <string name="makeTest">問題の作成</string>
+    <string name="back">戻る</string>
+    <string name="addWord">単語の追加</string>
+</resources>
