@@ -19,6 +19,10 @@ public interface BookDao {
     @Query("SELECT * FROM book WHERE name LIKE :bookName")
     BookWithWords getBookWithWords(String bookName);
 
+    @Transaction
+    @Query("SELECT * FROM book WHERE _ID LIKE :id")
+    BookWithWords getBookWithId(int id);
+
     @Query("SELECT * FROM words")
     List<Words> getAll();
 

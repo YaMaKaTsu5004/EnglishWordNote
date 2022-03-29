@@ -19,14 +19,14 @@ import java.util.Map;
 
 public class WordsEditActivity extends AppCompatActivity {
 
-    private String bookName;
+    private int bookId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         Intent intent = getIntent();
-        bookName = intent.getStringExtra(BookEditActivity.EXTRA_BOOKNAME);
+        bookId = intent.getIntExtra(BookEditActivity.EXTRA_BOOKID,0);
 
         setWordsEditActivity();
     }
@@ -42,13 +42,13 @@ public class WordsEditActivity extends AppCompatActivity {
 
         ListView listView = findViewById(R.id.words_list);
 
-        new AsynkTasks.WordsViewTask(db, this, listView, bookName).execute();
+        new AsynkTasks.WordsViewTask(db, this, listView, bookId).execute();
 
         wordAddButton.setOnClickListener(v -> setWordsEditActivitySub());
 
         allClearButton.setOnClickListener(v -> {
-            new AsynkTasks.WordsDeleteTask(db, this, bookName).execute();
-            new AsynkTasks.WordsViewTask(db, this, listView, bookName).execute();
+            new AsynkTasks.WordsDeleteTask(db, this, bookId).execute();
+            new AsynkTasks.WordsViewTask(db, this, listView, bookId).execute();
         });
 
 
@@ -68,7 +68,7 @@ public class WordsEditActivity extends AppCompatActivity {
         Button AddConfirm = findViewById((R.id.add_word_confirm));
 
         AddConfirm.setOnClickListener(v -> {
-            new AsynkTasks.WordDataStoreAsyncTask(db, this, jpnWord.getText().toString(), engWord.getText().toString(), bookName).execute();
+            new AsynkTasks.WordDataStoreAsyncTask(db, this, jpnWord.getText().toString(), engWord.getText().toString(), bookId).execute();
             setWordsEditActivity();
         });
 

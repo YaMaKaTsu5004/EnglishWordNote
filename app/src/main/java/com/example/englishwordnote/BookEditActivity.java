@@ -23,7 +23,7 @@ import java.util.Map;
 
 public class BookEditActivity extends AppCompatActivity {
 
-    public static final String EXTRA_BOOKNAME = "com.example.englishwordnote.BOOKNAME";
+    public static final String EXTRA_BOOKID = "com.example.englishwordnote.BOOKID";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,7 +47,7 @@ public class BookEditActivity extends AppCompatActivity {
 
         listView.setOnItemClickListener((parent, view, position, id) -> {
             Intent intent = new Intent(getApplication(), WordsEditActivity.class);
-            intent.putExtra(EXTRA_BOOKNAME,(String) listView.getItemAtPosition(position));
+            intent.putExtra(EXTRA_BOOKID,(int)id);
             startActivity(intent);
         });
 

@@ -54,7 +54,7 @@ public class WordsIOActivity extends AppCompatActivity {
         }
     }
 
-    private void readTextFromUri(Uri uri, String bookName) throws IOException {
+    private void readTextFromUri(Uri uri, int id) throws IOException {
         try (InputStream inputStream = getContentResolver().openInputStream(uri);
              BufferedReader reader = new BufferedReader(
                      new InputStreamReader(Objects.requireNonNull(inputStream)))) {
@@ -62,7 +62,7 @@ public class WordsIOActivity extends AppCompatActivity {
             while ((line = reader.readLine()) != null) {
                 String words[] = line.split(",");
                 AppDatabase db = AppDatabaseSingleton.getInstance(getApplicationContext());
-                new AsynkTasks.WordDataStoreAsyncTask(db,this,words[0],words[1],bookName).execute();
+                new AsynkTasks.WordDataStoreAsyncTask(db,this,words[0],words[1],id).execute();
             }
         }
     }
@@ -95,7 +95,7 @@ public class WordsIOActivity extends AppCompatActivity {
         setContentView(R.layout.book_edit_add);
 
         AppDatabase db = AppDatabaseSingleton.getInstance(getApplicationContext());
-
+        BookDao dao = db.bookDao();
         EditText bookName = findViewById(R.id.bookName);
 
         Button returnButton = findViewById(R.id.return_main);
@@ -103,9 +103,9 @@ public class WordsIOActivity extends AppCompatActivity {
 
         AddConfirm.setOnClickListener(v -> {
             new AsynkTasks.BookDataStoreAsyncTask(db, this, bookName.getText().toString()).execute();
-            try {
 
-                readTextFromUri(uri, bookName.getText().toString());
+            try {
+                readTextFromUri(uri, dao.getBookWithWords(bookName.getText().toString()).book.getBookId());
 
             } catch (IOException e) {
                 e.printStackTrace();

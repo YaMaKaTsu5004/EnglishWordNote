@@ -13,7 +13,9 @@ public class AppDatabaseSingleton {
         }
 
         instance = Room.databaseBuilder(context,
-                AppDatabase.class, "database-name").build();
+                AppDatabase.class, "database-name")
+                .allowMainThreadQueries()
+                .build();
         return instance;
     }
 }

@@ -2,10 +2,15 @@ package com.example.englishwordnote;
 
 import android.app.Activity;
 import android.content.Context;
+import android.database.Cursor;
+import android.database.MatrixCursor;
+import android.database.sqlite.SQLiteException;
 import android.os.AsyncTask;
+import android.provider.BaseColumns;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
+import android.widget.SimpleCursorAdapter;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -14,36 +19,27 @@ import java.util.Map;
 
 public class AsynkTasks {
 
-    public static class BookViewTask extends AsyncTask<Void, Void, Integer> {
+    public static class BookAccessTask extends AsyncTask<Void, Void, Integer> {
         private WeakReference<Activity> weakActivity;
         private AppDatabase db;
-        private ListView lv;
-        private Activity activity;
-        private ArrayAdapter adapter;
+        private int id;
+        private BookWithWords book;
+        public boolean check = false;
 
-        public BookViewTask(AppDatabase db, Activity activity, ListView lv) {
+        public BookAccessTask(AppDatabase db, int id) {
             this.db = db;
-            weakActivity = new WeakReference<>(activity);
-            this.activity = activity;
-            this.lv = lv;
+            this.id = id;
+
         }
+
 
         @Override
         protected Integer doInBackground(Void... params) {
+
             BookDao bookDao = db.bookDao();
-
-            List<BookWithWords> bwwlist = bookDao.getAllBooks();
-
-            ArrayList<String> books = new ArrayList<>();
-
-            for (BookWithWords bww:bwwlist){
-                books.add(bww.book.getName());
-            }
-
-            ArrayAdapter adapter = new ArrayAdapter<>(activity, android.R.layout.simple_list_item_1, books);
-
-            this.adapter = adapter;
-
+            BookWithWords book = bookDao.getBookWithId(id);
+            this.book = book;
+            this.check = true;
             return 0;
         }
 
@@ -53,6 +49,63 @@ public class AsynkTasks {
             if(activity == null) {
                 return;
             }
+        }
+
+        public BookWithWords getBook(){
+            return book;
+        }
+    }
+
+    public static class BookViewTask extends AsyncTask<Void, Void, Integer> {
+        private WeakReference<Activity> weakActivity;
+        private AppDatabase db;
+        private ListView lv;
+        private Activity activity;
+        private SimpleCursorAdapter adapter;
+        private Cursor c;
+
+        private SimpleCursorAdapter sca;
+
+        public BookViewTask(AppDatabase db, Activity activity, ListView lv) {
+            this.db = db;
+            weakActivity = new WeakReference<>(activity);
+            this.activity = activity;
+            this.lv = lv;
+
+
+
+        }
+
+
+        @Override
+        protected Integer doInBackground(Void... params) {
+
+            BookDao bookDao = db.bookDao();
+            List<BookWithWords> books = bookDao.getAllBooks();
+        /* NOTE that as Cursor Adapters required a column named _ID (as per BaseColumns._ID)
+            the first column has been renamed accordingly
+
+         */
+            MatrixCursor mxcsr = new MatrixCursor(new String[]{
+                    BaseColumns._ID,
+                    "name"}
+            );
+            for (BookWithWords b: bookDao.getAllBooks()) {
+                mxcsr.addRow(new Object[]{b.book.getBookId(),b.book.getName()});
+            }
+            this.c = mxcsr;
+            return 0;
+        }
+
+        @Override
+        protected void onPostExecute(Integer code) {
+            Activity activity = weakActivity.get();
+            if(activity == null) {
+                return;
+            }
+
+            SimpleCursorAdapter sca = new SimpleCursorAdapter(activity,android.R.layout.simple_list_item_1,c,new String[]{"name"}, new int[]{android.R.id.text1});
+            this.adapter = sca;
 
             lv.setAdapter(adapter);
 
@@ -97,6 +150,8 @@ public class AsynkTasks {
         private WeakReference<Activity> weakActivity;
         private AppDatabase db;
         private String bookName;
+        private Book book;
+        private int id;
 
         public BookDataStoreAsyncTask(AppDatabase db, Activity activity, String bookName) {
             this.db = db;
@@ -109,6 +164,7 @@ public class AsynkTasks {
             BookDao bookDao = db.bookDao();
             Book book = new Book(bookName);
             bookDao.insertBook(book);
+            this.book = book;
 
             return 0;
         }
@@ -119,43 +175,48 @@ public class AsynkTasks {
             if(activity == null) {
                 return;
             }
+            this.id = book.getBookId();
+
+        }
+
+        public int getId(){
+            return this.id;
         }
     }
 
     public static class WordsViewTask extends AsyncTask<Void, Void, Integer> {
+        private int id;
         private WeakReference<Activity> weakActivity;
         private AppDatabase db;
         private ListView lv;
         private Activity activity;
-        private SimpleAdapter wordsListAdapter;
-        private String bookName;
+        private SimpleCursorAdapter adapter;
+        private Cursor c;
 
-        public WordsViewTask(AppDatabase db, Activity activity, ListView lv, String bookName) {
+        public WordsViewTask(AppDatabase db, Activity activity, ListView lv, int id) {
             this.db = db;
             weakActivity = new WeakReference<>(activity);
             this.activity = activity;
             this.lv = lv;
-            this.bookName = bookName;
+            this.id = id;
         }
 
         @Override
         protected Integer doInBackground(Void... params) {
             BookDao wordsDao = db.bookDao();
 
-            List<Words> atList = wordsDao.getBookWithWords(bookName).words;
+            List<Words> atList = wordsDao.getBookWithId(id).words;
 
 
-            List<Map<String, String>> wordsList = WordsMapping.getdata(atList);
-
-            SimpleAdapter wordsListAdapter = new SimpleAdapter(
-                    activity,
-                    wordsList,
-                    R.layout.words_list,
-                    new String[]{"jpnWord", "engWord"},
-                    new int[]{R.id.jpnWord, R.id.engWord}
+            MatrixCursor mxcsr = new MatrixCursor(new String[]{
+                    BaseColumns._ID,
+                    "jpnWord",
+                    "engWord"}
             );
-
-            this.wordsListAdapter = wordsListAdapter;
+            for (Words b: wordsDao.getBookWithId(id).words) {
+                mxcsr.addRow(new Object[]{b.getWordId(),b.getJpnWord(),b.getEngWord()});
+            }
+            this.c = mxcsr;
 
 
             return 0;
@@ -168,7 +229,10 @@ public class AsynkTasks {
                 return;
             }
 
-            lv.setAdapter(wordsListAdapter);
+            SimpleCursorAdapter sca = new SimpleCursorAdapter(activity,R.layout.words_list,c,new String[]{"jpnWord", "engWord"}, new int[]{R.id.jpnWord, R.id.engWord});
+            this.adapter = sca;
+
+            lv.setAdapter(adapter);
 
         }
     }
@@ -179,19 +243,20 @@ public class AsynkTasks {
         private Activity activity;
         private SimpleAdapter wordsListAdapter;
         private String bookName;
+        private int id;
 
-        public WordsDeleteTask(AppDatabase db, Activity activity, String bookName) {
+        public WordsDeleteTask(AppDatabase db, Activity activity, int id) {
             this.db = db;
             weakActivity = new WeakReference<>(activity);
             this.activity = activity;
-            this.bookName = bookName;
+            this.id = id;
         }
 
         @Override
         protected Integer doInBackground(Void... params) {
             BookDao wordsDao = db.bookDao();
 
-            List<Words> atList = wordsDao.getBookWithWords(bookName).words;
+            List<Words> atList = wordsDao.getBookWithId(id).words;
 
             for (Words at : atList){
                 wordsDao.deleteWord(at);
@@ -215,19 +280,19 @@ public class AsynkTasks {
         private String jpnWord;
         private String engWord;
         private String bookName;
+        private int id;
 
-        public WordDataStoreAsyncTask(AppDatabase db, Activity activity, String jpnWord, String engWord, String bookName) {
+        public WordDataStoreAsyncTask(AppDatabase db, Activity activity, String jpnWord, String engWord, int id) {
             this.db = db;
             weakActivity = new WeakReference<>(activity);
             this.jpnWord = jpnWord;
             this.engWord = engWord;
-            this.bookName = bookName;
+            this.id = id;
         }
 
         @Override
         protected Integer doInBackground(Void... params) {
             BookDao wordsDao = db.bookDao();
-            int id = wordsDao.getBookWithWords(bookName).book.getBookId();
             Words word = new Words(id, jpnWord, engWord);
             wordsDao.insertWord(word);
 
@@ -247,6 +312,7 @@ public class AsynkTasks {
         private WeakReference<Activity> weakActivity;
         private AppDatabase db;
         private String bookName;
+        private int id;
         private String fileName;
         private Activity activity;
         private ArrayAdapter adapter;

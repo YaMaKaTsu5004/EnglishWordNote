@@ -85,8 +85,8 @@ public class WordsOutputActivity extends AppCompatActivity {
         returnButton.setOnClickListener(v -> finish());
 
         listView.setOnItemClickListener((parent, view, position, id) -> {
-            String bookName = (String) listView.getItemAtPosition(position);
-            this.bookName = bookName;
+            BookDao dao = db.bookDao();
+            this.bookName = dao.getBookWithId((int) id).book.getName();
             export(bookName);
         });
 

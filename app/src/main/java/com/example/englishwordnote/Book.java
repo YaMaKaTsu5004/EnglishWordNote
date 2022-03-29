@@ -8,6 +8,7 @@ import androidx.room.Query;
 @Entity(tableName = "book")
 public class Book {
     @PrimaryKey(autoGenerate = true)
+    @ColumnInfo(name = "_ID")
     private int bookId;
 
     @ColumnInfo(name = "name")

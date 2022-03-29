@@ -8,6 +8,6 @@ import java.util.List;
 public class BookWithWords {
     @Embedded public Book book;
     @Relation(
-            parentColumn = "bookId", entityColumn = "bookCreateId", entity = Words.class
+            parentColumn = "_ID", entityColumn = "bookCreateId", entity = Words.class
     ) public List<Words> words;
 }
