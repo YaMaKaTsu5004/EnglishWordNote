@@ -11,11 +11,22 @@
         android:descendantFocusability="blocksDescendants">
 
         <TextView
+            android:id="@+id/count"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_weight="0.2"
+            android:gravity="start|center"
+            android:minHeight="?android:attr/listPreferredItemHeightSmall"
+            android:textColor="#DD000000"
+            android:textSize="18sp"/>
+
+        <TextView
             android:id="@+id/jpnWord"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:layout_weight="0.45"
+            android:layout_weight="0.5"
             android:gravity="start|center"
             android:minHeight="?android:attr/listPreferredItemHeightSmall"
             android:textColor="#DD000000"
@@ -26,18 +37,11 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:layout_weight="0.45"
+            android:layout_weight="0.5"
             android:gravity="start|center"
             android:minHeight="?android:attr/listPreferredItemHeightSmall"
             android:textColor="#DD000000"
             android:textSize="18sp" />
-
-        <Button
-            android:id="@+id/delete_word"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_weight="0.1" />
 
 
     </LinearLayout>

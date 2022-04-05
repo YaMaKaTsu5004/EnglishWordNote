@@ -9,7 +9,7 @@ import androidx.room.Relation;
 @Entity (tableName = "words")
 public class Words {
 
-    @ColumnInfo(name = "_id")
+    @ColumnInfo(name = "_ID")
     @PrimaryKey(autoGenerate = true)
     private int wordId;
 

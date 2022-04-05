@@ -1,25 +1,12 @@
 package com.example.englishwordnote;
 
-import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.SimpleAdapter;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.room.Database;
-
-import java.lang.ref.WeakReference;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 public class BookEditActivity extends AppCompatActivity {
 
@@ -33,7 +20,7 @@ public class BookEditActivity extends AppCompatActivity {
     }
 
     private void setBookEditActivity(){
-        setContentView(R.layout.book_edit);
+        setContentView(R.layout.activity_book_edit);
 
         AppDatabase db = AppDatabaseSingleton.getInstance(getApplicationContext());
 

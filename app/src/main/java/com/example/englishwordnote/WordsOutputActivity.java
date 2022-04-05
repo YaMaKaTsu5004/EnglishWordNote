@@ -73,7 +73,7 @@ public class WordsOutputActivity extends AppCompatActivity {
     }
 
     private void setExportBook(){
-        setContentView(R.layout.book_export);
+        setContentView(R.layout.book_select);
 
         ListView listView = findViewById(R.id.book_list);
         AppDatabase db = AppDatabaseSingleton.getInstance(getApplicationContext());

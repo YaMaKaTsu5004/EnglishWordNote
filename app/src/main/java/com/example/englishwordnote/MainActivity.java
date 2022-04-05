@@ -29,7 +29,8 @@ public class MainActivity extends AppCompatActivity{
         });
 
         makeTest.setOnClickListener(v -> {
-
+            Intent makeTestInt = new Intent(getApplication(), MakeTestActivity.class);
+            startActivity(makeTestInt);
         });
 
 

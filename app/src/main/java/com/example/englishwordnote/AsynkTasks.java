@@ -90,6 +90,7 @@ public class AsynkTasks {
                     BaseColumns._ID,
                     "name"}
             );
+
             for (BookWithWords b: bookDao.getAllBooks()) {
                 mxcsr.addRow(new Object[]{b.book.getBookId(),b.book.getName()});
             }
@@ -152,6 +153,7 @@ public class AsynkTasks {
         private String bookName;
         private Book book;
         private int id;
+        public boolean check = false;
 
         public BookDataStoreAsyncTask(AppDatabase db, Activity activity, String bookName) {
             this.db = db;
@@ -165,6 +167,7 @@ public class AsynkTasks {
             Book book = new Book(bookName);
             bookDao.insertBook(book);
             this.book = book;
+            this.check = true;
 
             return 0;
         }
@@ -176,7 +179,6 @@ public class AsynkTasks {
                 return;
             }
             this.id = book.getBookId();
-
         }
 
         public int getId(){
@@ -192,6 +194,7 @@ public class AsynkTasks {
         private Activity activity;
         private SimpleCursorAdapter adapter;
         private Cursor c;
+        private int count = 1;
 
         public WordsViewTask(AppDatabase db, Activity activity, ListView lv, int id) {
             this.db = db;
@@ -210,17 +213,21 @@ public class AsynkTasks {
 
             MatrixCursor mxcsr = new MatrixCursor(new String[]{
                     BaseColumns._ID,
+                    "count",
                     "jpnWord",
                     "engWord"}
             );
             for (Words b: wordsDao.getBookWithId(id).words) {
-                mxcsr.addRow(new Object[]{b.getWordId(),b.getJpnWord(),b.getEngWord()});
+                mxcsr.addRow(new Object[]{b.getWordId(),count,b.getJpnWord(),b.getEngWord()});
+                count++;
             }
             this.c = mxcsr;
 
 
             return 0;
         }
+
+
 
         @Override
         protected void onPostExecute(Integer code) {
@@ -229,7 +236,7 @@ public class AsynkTasks {
                 return;
             }
 
-            SimpleCursorAdapter sca = new SimpleCursorAdapter(activity,R.layout.words_list,c,new String[]{"jpnWord", "engWord"}, new int[]{R.id.jpnWord, R.id.engWord});
+            SimpleCursorAdapter sca = new SimpleCursorAdapter(activity,R.layout.words_list,c,new String[]{"count", "jpnWord", "engWord"}, new int[]{R.id.count, R.id.jpnWord, R.id.engWord});
             this.adapter = sca;
 
             lv.setAdapter(adapter);

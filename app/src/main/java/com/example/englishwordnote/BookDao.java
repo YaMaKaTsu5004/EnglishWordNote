@@ -24,7 +24,13 @@ public interface BookDao {
     BookWithWords getBookWithId(int id);
 
     @Query("SELECT * FROM words")
-    List<Words> getAll();
+    List<Words> getAllWords();
+
+    @Query("SELECT * FROM words WHERE _ID LIKE :id")
+    Words getWordWithId(int id);
+
+    @Query("SELECT * FROM words LIMIT :limit OFFSET :start - 1")
+    List<Words> getSomeWords(int start, int limit);
 
     @Insert
     void insertBook(Book book);

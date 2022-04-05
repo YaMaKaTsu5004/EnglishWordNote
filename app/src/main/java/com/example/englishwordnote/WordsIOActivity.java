@@ -2,27 +2,15 @@ package com.example.englishwordnote;
 
 import java.io.*;
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Environment;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ListView;
-import android.widget.Toast;
 
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 
-import java.io.File;
 import java.io.IOException;
-import java.lang.ref.WeakReference;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 public class WordsIOActivity extends AppCompatActivity {
@@ -68,7 +56,7 @@ public class WordsIOActivity extends AppCompatActivity {
     }
 
     private void setMenu(){
-        setContentView(R.layout.words_io);
+        setContentView(R.layout.activity_words_io);
 
         Button returnButton = findViewById(R.id.return_main);
         Button importButton = findViewById(R.id.data_import);
@@ -102,7 +90,12 @@ public class WordsIOActivity extends AppCompatActivity {
         Button AddConfirm = findViewById((R.id.add_book_comfirm));
 
         AddConfirm.setOnClickListener(v -> {
-            new AsynkTasks.BookDataStoreAsyncTask(db, this, bookName.getText().toString()).execute();
+
+            BookDao bookDao = db.bookDao();
+
+            Book book = new Book(bookName.getText().toString());
+
+            bookDao.insertBook(book);
 
             try {
                 readTextFromUri(uri, dao.getBookWithWords(bookName.getText().toString()).book.getBookId());

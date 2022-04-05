@@ -5,4 +5,5 @@
     <string name="makeTest">問題の作成</string>
     <string name="back">戻る</string>
     <string name="addWord">単語の追加</string>
+    <string name="random">ランダム</string>
 </resources>
